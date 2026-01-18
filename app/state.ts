@@ -26,7 +26,7 @@ const maxHistoryIndex = 99; // max length is one greater than this
 let actionsCount = 0;
 const autosaveActionsInterval = 20;
 const autosaveInactivityTimer = 10000;
-let autosaveTimeout: NodeJS.Timeout;
+let autosaveTimeout: ReturnType<typeof setTimeout>;
 
 export function isMapEmpty() {
   return objectIsEmpty(state.objects) && objectIsEmpty(state.drawing);

@@ -456,7 +456,7 @@ function renderScreenshotModal() {
           this.outline = outline;
         }
         mapImage.data.perspectiveWarp = function() {
-          return new Promise(function(onComplete) {
+          return new Promise<void>(function(onComplete) {
             const resultSize = new Size(700, 600);
 
             mapImage.data.sortPoints();

@@ -88,7 +88,8 @@ export function loadImage(onLoad) {
         heic2any({blob: file })
           .then(function(conversionResult) {
             showLoadingScreen(false);
-            var url = URL.createObjectURL(conversionResult);
+            const blob = Array.isArray(conversionResult) ? conversionResult[0] : conversionResult;
+            var url = URL.createObjectURL(blob);
             loadDataURLAsImage(url);
           })
           .catch(function(e) {

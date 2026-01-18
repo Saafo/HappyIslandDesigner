@@ -1,17 +1,17 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const DynamicCdnWebpackPlugin = require('dynamic-cdn-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
-  entry: ['./app/index'],
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+  entry: {
+    main: './app/index',
+  },
   output: {
     path: path.join(__dirname),
-    filename: 'bundle.js',
+    filename: (pathData) => (pathData.chunk && pathData.chunk.name === 'main' ? 'bundle.js' : '[name].bundle.js'),
+    chunkFilename: '[name].bundle.js',
   },
   resolve: {
     modules: ['node_modules'],
@@ -19,14 +19,6 @@ module.exports = {
   },
   module: {
     rules: [
-      {
-        test: /\.(j|t)s(x)?$/,
-        exclude: /node_modules/,
-        loader: 'eslint-loader',
-        options: {
-          // eslint options (if necessary)
-        },
-      },
       {
         test: /\.scss$/,
         exclude: /node_modules/,
@@ -48,7 +40,6 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            cacheDirectory: true,
             babelrc: false,
             presets: [
               [
@@ -77,26 +68,39 @@ module.exports = {
       },
     ],
   },
+  ignoreWarnings: [
+    (warning) => {
+      const message = warning && typeof warning.message === 'string' ? warning.message : '';
+      return message.includes("Should not import the named export 'version' (imported as 'version') from default-exporting module");
+    },
+  ],
   devtool: 'eval-source-map',
   plugins: [
-    new ForkTsCheckerWebpackPlugin(),
-    new webpack.NamedModulesPlugin(),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'static', 'index.html'),
       filename: 'index.html',
     }),
-    //new CopyPlugin([{ from: 'src/static', to: 'static' }]),
-
-    // new MiniCssExtractPlugin({
-    //   // Options similar to the same options in webpackOptions.output
-    //   // both options are optional
-    //   filename: '[name].css',
-    //   chunkFilename: '[id].css',
-    // }),
-    new DynamicCdnWebpackPlugin({
-      exclude: ['file-saver']
-    })
+    ...(process.env.NODE_ENV === 'production'
+      ? [
+          new MiniCssExtractPlugin({
+            filename: '[name].css',
+            chunkFilename: '[id].css',
+          }),
+        ]
+      : []),
+    ...(process.env.NODE_ENV === 'production'
+      ? []
+      : [
+          new webpack.HotModuleReplacementPlugin(),
+        ]),
   ],
+  devServer: {
+    static: {
+      directory: __dirname,
+    },
+    port: 8080,
+    hot: true,
+  },
   optimization: {
     splitChunks: {
       cacheGroups: {

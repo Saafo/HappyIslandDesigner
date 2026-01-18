@@ -10,7 +10,7 @@ export default function useBlockZoom() {
     };
   }, [ref]);
 
-  function handleScroll(event: MouseWheelEvent) {
+  function handleScroll(event: WheelEvent) {
     if (event.ctrlKey) {
       event.preventDefault();
     }
