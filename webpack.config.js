@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -9,7 +10,8 @@ module.exports = {
     main: './app/index',
   },
   output: {
-    path: path.join(__dirname),
+    path: path.join(__dirname, 'dist'),
+    clean: true,
     filename: (pathData) => (pathData.chunk && pathData.chunk.name === 'main' ? 'bundle.js' : '[name].bundle.js'),
     chunkFilename: '[name].bundle.js',
   },
@@ -76,6 +78,12 @@ module.exports = {
   ],
   devtool: 'eval-source-map',
   plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'static', to: 'static' },
+        { from: 'favicon.ico', to: 'favicon.ico' },
+      ],
+    }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'static', 'index.html'),
       filename: 'index.html',
