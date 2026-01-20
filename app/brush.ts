@@ -56,6 +56,13 @@ export function getCurrentBrushSize() {
   return brushSize;
 }
 
+export function getCurrentBrushSizeDisplay() {
+  if (rawBrushSize === 0) {
+    return 0.5; // size zero brush is actually 0.5
+  }
+  return brushSize;
+}
+
 export function getCurrentObjectPreview() {
   return objectPreview;
 }
@@ -319,13 +326,13 @@ export function cycleBrushHead() {
 }
 
 export function decrementBrush() {
-  rawBrushSize = Math.max(brushSize - 1, 0);
+  rawBrushSize = Math.max(rawBrushSize - 1, 0);
   brushSize = Math.max(rawBrushSize, 1);
   updateBrush();
 }
 
 export function incrementBrush() {
-  rawBrushSize = Math.max(brushSize + 1, 0);
+  rawBrushSize = Math.max(rawBrushSize + 1, 0);
   brushSize = Math.max(rawBrushSize, 1);
   updateBrush();
 }

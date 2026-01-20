@@ -9,7 +9,7 @@ import {
   incrementBrush,
   decrementBrush,
   getCurrentBrushLineForce,
-  getCurrentBrushSize,
+  getCurrentBrushSizeDisplay,
 } from '../brush';
 import { createIncrementComponents, createVerticalIncrementControl } from './incrementControl';
 import { Group, Path, Point, Rectangle, Size } from 'paper';
@@ -36,7 +36,7 @@ function update() {
     brushPreview.bounds.width = Math.min(30, 5 * brushPreview.bounds.width);
     brushPreview.position = new paper.Point(0, 0);
   }
-  brushSizeText.content = `${getCurrentBrushSize() || '0.5'}`; // size zero brush is actually 0.5
+  brushSizeText.content = `${getCurrentBrushSizeDisplay()}`;
 }
 
 function updateBrushLineButton(isBrushLine) {
