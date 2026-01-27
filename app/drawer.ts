@@ -21,6 +21,8 @@ import { tryLoadAutosaveMap } from './load';
 import { backgroundInit, drawBackground } from './background';
 import { resizeCoordinates } from './resizeCoordinates';
 import { keys } from './keyboard';
+import { store } from './store';
+import { shouldPencilModePan } from './helpers/shouldPencilModePan';
 
 function initializeApp() {
   toolState.switchToolType(toolCategoryDefinition.terrain.type);
@@ -72,6 +74,9 @@ export function drawer() {
     if (keys.isSpaceDown) {
       return;
     }
+    if (shouldPencilModePan(event?.event, store.pencilModeEnabled)) {
+      return;
+    }
     toolState.onDown(event);
     if (toolState.toolIsActive) {
       toolState.activeTool.definition.onMouseDown(event);
@@ -86,12 +91,18 @@ export function drawer() {
     if (keys.isSpaceDown) {
       return;
     }
+    if (shouldPencilModePan(event?.event, store.pencilModeEnabled)) {
+      return;
+    }
     if (toolState.toolIsActive) {
       toolState.activeTool.definition.onMouseDrag(event);
     }
   };
   paper.view.onMouseUp = function onMouseUp(event) {
     if (keys.isSpaceDown) {
+      return;
+    }
+    if (shouldPencilModePan(event?.event, store.pencilModeEnabled)) {
       return;
     }
     if (toolState.toolIsActive) {

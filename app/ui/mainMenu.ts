@@ -6,12 +6,27 @@ import i18next from 'i18next';
 import { renderModal } from './modal';
 import { colors } from '../colors';
 import { saveMapToFile } from '../save';
-import { loadMapFromFile, loadTemplate } from '../load';
+import { loadMapFromFile } from '../load';
 import { showSwitchModal } from './screenshotModal';
 import { OpenMapSelectModal } from '../components/ModalMapSelect';
+import { store, setPencilModeEnabled } from '../store';
+import { emitter } from '../emitter';
 
 
 export let mainMenu: paper.Group;
+
+function addEnabledDot(buttonGroup: paper.Group, isEnabled: boolean) {
+  const dot = new paper.Path.Circle(new paper.Point(28, -28), 6);
+  dot.strokeColor = colors.offWhite.color;
+  dot.strokeWidth = 2;
+  dot.fillColor = isEnabled ? colors.tentGreen.color : colors.lightText.color;
+  dot.locked = true;
+  buttonGroup.addChild(dot);
+
+  buttonGroup.data.setEnabledDot = function (enabled) {
+    dot.fillColor = enabled ? colors.tentGreen.color : colors.lightText.color;
+  };
+}
 
 function createMenuButton(
   name: string,
@@ -133,6 +148,21 @@ export function showMainMenu(isShown: boolean) {
       'static/img/menu-switch.png', 0, 1,
       () => showSwitchModal(true));
 
+    const pencilModeButton = createMenuButton(
+      i18next.t('pencil_mode'),
+      'static/img/menu-drawbrush.png',
+      1, 1,
+      () => {
+        setPencilModeEnabled(!store.pencilModeEnabled);
+      },
+    );
+    addEnabledDot(pencilModeButton, store.pencilModeEnabled);
+    emitter.on('pencilModeUpdate', (enabled) => {
+      if (pencilModeButton?.data?.setEnabledDot) {
+        pencilModeButton.data.setEnabledDot(enabled);
+      }
+    });
+
     const twitterButton = createMenuButton(
       i18next.t('twitter'),
       'static/img/menu-twitt.png',
@@ -148,6 +178,7 @@ export function showMainMenu(isShown: boolean) {
       loadButton,
       newButton,
       switchButton,
+      pencilModeButton,
       twitterButton,
     ]);
     mainMenu.opacity = 0;

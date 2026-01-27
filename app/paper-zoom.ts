@@ -6,7 +6,9 @@
 // ===============================================
 // SCROLL EVENTS
 
-import {project, view, Point} from 'paper';
+import {project, view} from 'paper';
+import { store } from './store';
+import { shouldPencilModePan } from './helpers/shouldPencilModePan';
 
 export function zoom() {
   view.on('twofingermove', (event) => {
@@ -19,9 +21,9 @@ export function zoom() {
   const MouseWheelHandler = (event) => {
     const mousePosition = new paper.Point(event.offsetX, event.offsetY);
 
-    let deltaX = event.deltaX;
+    const deltaX = event.deltaX;
     let deltaY = event.deltaY;
-    let factor = -1;
+    const factor = -1;
     deltaY *= factor;
 
     if (event.altKey || event.ctrlKey) {
@@ -40,6 +42,10 @@ export function zoom() {
 
   // doesn't work on some older browsers but whatevs
   view.element.addEventListener("wheel", MouseWheelHandler, false);
+
+  if (view.element) {
+    view.element.style.touchAction = 'none';
+  }
 
   // function onResize(event) {
   // Whenever the window is resized, recenter the path:
@@ -60,6 +66,36 @@ export function zoom() {
   let isSpaceDown = false;
   let mouseNativeStart: paper.Point | null = null;
   let viewCenterStart: paper.Point | null = null;
+  let isPencilModePanning = false;
+
+  function getCanvasOffsetFromNativeEvent(nativeEvent) {
+    const canvas = view.element as HTMLCanvasElement | null;
+    if (!canvas) {
+      return null;
+    }
+    const rect = canvas.getBoundingClientRect();
+
+    if (
+      typeof nativeEvent?.offsetX === 'number' &&
+      typeof nativeEvent?.offsetY === 'number'
+    ) {
+      return new paper.Point(nativeEvent.offsetX, nativeEvent.offsetY);
+    }
+
+    if (
+      typeof nativeEvent?.clientX === 'number' &&
+      typeof nativeEvent?.clientY === 'number'
+    ) {
+      return new paper.Point(nativeEvent.clientX - rect.left, nativeEvent.clientY - rect.top);
+    }
+
+    const touch = nativeEvent?.touches?.[0] || nativeEvent?.changedTouches?.[0];
+    if (touch) {
+      return new paper.Point(touch.clientX - rect.left, touch.clientY - rect.top);
+    }
+
+    return null;
+  }
 
   view.on('keydown', (event) => {
     if (event.key === 'space') {
@@ -76,35 +112,51 @@ export function zoom() {
   // This function is called whenever the user
   // clicks the mouse in the view:
   view.on('mousedown', (event) => {
-    if (!isSpaceDown) {
+    isPencilModePanning = shouldPencilModePan(event.event, store.pencilModeEnabled);
+    if (!isSpaceDown && !isPencilModePanning) {
       return;
     }
     viewCenterStart = view.center;
     // Have to use native mouse offset, because ev.delta
     //  changes as the view is scrolled.
-    mouseNativeStart = new Point(event.event.offsetX, event.event.offsetY);
+    const start = getCanvasOffsetFromNativeEvent(event.event);
+    if (!start) {
+      mouseNativeStart = null;
+      viewCenterStart = null;
+      isPencilModePanning = false;
+      return;
+    }
+    mouseNativeStart = start;
   });
 
   view.on('mousedrag', (event) => {
-    if (!isSpaceDown) {
+    if (!isSpaceDown && !isPencilModePanning) {
       return;
     }
     if (viewCenterStart && mouseNativeStart) {
+      const current = getCanvasOffsetFromNativeEvent(event.event);
+      if (!current) {
+        return;
+      }
       const nativeDelta = new paper.Point(
-        event.event.offsetX - mouseNativeStart.x,
-        event.event.offsetY - mouseNativeStart.y,
+        current.x - mouseNativeStart.x,
+        current.y - mouseNativeStart.y,
       );
       // Move into view coordinates to subract delta,
       //  then back into project coords.
       view.center = view.viewToProject(
         view.projectToView(viewCenterStart).subtract(nativeDelta),
       );
+      if (isPencilModePanning && event.event?.preventDefault) {
+        event.event.preventDefault();
+      }
     }
   });
 
   view.on('mouseup', () => {
     mouseNativeStart = null;
     viewCenterStart = null;
+    isPencilModePanning = false;
   });
 
   // ===============================================

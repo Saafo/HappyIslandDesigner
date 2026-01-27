@@ -54,7 +54,8 @@ export const strings = {
             load_screenshot: 'Upload Screenshot',
             load_game_map: 'Load Game Map',
             load_game_map_instructions: '1. Upload a photo/screenshot of your map\n\n2. Mark the four corners of the grid',
-            twitter: 'Twitter'
+            twitter: 'Twitter',
+            pencil_mode: 'Pencil Mode'
         }
     },
     'zh-CN': {
@@ -110,7 +111,8 @@ export const strings = {
             load_screenshot: '载入截图',
             load_game_map: '载入游戏地图',
             load_game_map_instructions: '1. 上传地图的照片或屏幕截图\n\n2. 标记网格的四个角',
-            twitter: '推特'
+            twitter: '推特',
+            pencil_mode: 'Pencil 模式'
         }
     },
     'zh-TW': {
@@ -166,7 +168,8 @@ export const strings = {
             load_screenshot: '載入地圖',
             load_game_map: '載入遊戲地圖',
             load_game_map_instructions: '1. 上傳地圖的照片或螢幕截圖\n\n2. 標註格線的四個角落',
-            twitter: 'Twitter'
+            twitter: 'Twitter',
+            pencil_mode: 'Pencil 模式'
         }
     },
     'es-ES': {
@@ -222,7 +225,8 @@ export const strings = {
             load_screenshot: 'Subir Captura de Pantalla',
             load_game_map: 'Subir Mapa desde el Juego',
             load_game_map_instructions: '1. Sube una foto o captura de pantalla de tu mapa\n\n2. Marca las cuatro esquinas de la rejilla',
-            twitter: 'Twitter'
+            twitter: 'Twitter',
+            pencil_mode: 'Modo Lápiz'
         }
     },
     ja: {
@@ -278,7 +282,8 @@ export const strings = {
             load_screenshot: 'ゲームマップからロード',
             load_game_map: 'マップをロード',
             load_game_map_instructions: '1. ゲームマップの写真かスクリーンショットをアップロードします\n\n2. グリッドの四隅をマークします',
-            twitter: 'Twitter'
+            twitter: 'Twitter',
+            pencil_mode: 'ペンシルモード'
         }
     }
 }
