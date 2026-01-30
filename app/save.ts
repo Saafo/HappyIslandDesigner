@@ -281,7 +281,7 @@ export function saveMapToFile() {
     mapBounds.bottomRight.subtract(new paper.Point(2, 2)),
   );
   text.justification = 'right';
-  text.content = 'made at eugeneration.github.io/HappyIslandDesigner';
+  text.content = 'made at saafo.github.io/HappyIslandDesigner';
   text.fontFamily = 'TTNorms, sans-serif';
   text.fillColor = colors.oceanDark.color;
   text.strokeWidth = 0;
