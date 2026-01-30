@@ -1,14 +1,16 @@
-import { saveAs } from 'file-saver';
+export function downloadDataURLForiOSSafari(filename, data, targetWindow) {
+  const blob = dataURLtoBlob(data);
+  const url = URL.createObjectURL(blob);
 
-export function downloadDataURLForiOSSafari(filename, data) {
-  const image = new Image();
-  image.src = data;
-  image.addEventListener(
-    'load',
-    () => {
-      saveAs(dataURLtoBlob(data), filename);
-    }
-  );
+  if (targetWindow && !targetWindow.closed && targetWindow.location) {
+    targetWindow.location.replace(url);
+  } else {
+    window.location.href = url;
+  }
+
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 60000);
 }
 
 export function downloadDataURL(filename, data) {
@@ -33,10 +35,14 @@ export function downloadText(filename, text) {
 }
 
 function dataURLtoBlob(dataurl) {
-  var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-      bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-  while(n--){
-      u8arr[n] = bstr.charCodeAt(n);
+  const arr = dataurl.split(',');
+  const mimeMatch = arr[0].match(/:(.*?);/);
+  const mime = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
   }
-  return new Blob([u8arr], {type:mime});
+  return new Blob([u8arr], { type: mime });
 }

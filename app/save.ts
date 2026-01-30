@@ -315,9 +315,6 @@ export function saveMapToFile() {
   const mapRasterSize = combinedImage.size;
   let mapRasterData = combinedImage.toDataURL();
 
-  const shadowCanvas = document.createElement('canvas');
-  // const shadowCtx = shadowCanvas.getContext('2d');
-  shadowCanvas.style.display = 'none';
   const image = new Image();
   image.src = mapRasterData;
 
@@ -327,7 +324,7 @@ export function saveMapToFile() {
     navigator.userAgent.indexOf('CriOS') == -1 &&
     navigator.userAgent.indexOf('FxiOS') == -1;
   var w;
-  if (os == "iOS" && !isSafari) {
+  if (os == "iOS") {
     w = window.open('about:blank');
   }
 
@@ -343,7 +340,7 @@ export function saveMapToFile() {
 
       if (os == "iOS") {
         if (isSafari) {
-          downloadDataURLForiOSSafari(filename, mapRasterData)
+          downloadDataURLForiOSSafari(filename, mapRasterData, w);
         } else {
           image.src = mapRasterData;
           image.addEventListener(
